@@ -1,0 +1,77 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  username String [unique, not null]
+  email String [unique, not null]
+  password String [not null]
+  firstname String
+  lastname String
+  posts Post [not null]
+  profile Profile
+  postLikes PostLike [not null]
+  postComments PostComment [not null]
+}
+
+Table Profile {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  bio String
+  user User [not null]
+  userId String [unique, not null]
+}
+
+Table Post {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  published Boolean [not null]
+  title String [not null]
+  content String
+  link String
+  user User
+  userId String
+  postLikes PostLike [not null]
+  postComments PostComment [not null]
+}
+
+Table PostLike {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  published Boolean [not null]
+  type String [not null]
+  post Post
+  postId String [unique]
+  user User
+  userId String [unique]
+}
+
+Table PostComment {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  published Boolean [not null]
+  content String [not null]
+  post Post
+  postId String [unique]
+  user User
+  userId String [unique]
+}
+
+Ref: Profile.userId - User.id
+
+Ref: Post.userId > User.id
+
+Ref: PostLike.postId > Post.id [delete: No Action]
+
+Ref: PostLike.userId > User.id [delete: No Action]
+
+Ref: PostComment.postId > Post.id [delete: No Action]
+
+Ref: PostComment.userId > User.id [delete: No Action]

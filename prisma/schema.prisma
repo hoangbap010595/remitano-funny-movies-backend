@@ -1,0 +1,76 @@
+datasource db {
+    provider = "sqlserver"
+    //provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+    // previewFeatures = []
+}
+
+generator dbml {
+    provider = "prisma-dbml-generator"
+}
+
+model User {
+    id           String        @id @default(cuid())
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
+    username     String        @unique
+    email        String        @unique
+    password     String
+    firstname    String?
+    lastname     String?
+    posts        Post[]
+    profile      Profile?
+    postLikes    PostLike[]
+    postComments PostComment[]
+}
+
+model Profile {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    bio       String?
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String   @unique
+}
+
+model Post {
+    id           String        @id @default(cuid())
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
+    published    Boolean
+    title        String
+    content      String?
+    link         String?
+    user         User?         @relation(fields: [userId], references: [id])
+    userId       String?
+    postLikes    PostLike[]
+    postComments PostComment[]
+}
+
+model PostLike {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    published Boolean
+    type      String
+    post      Post?    @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    postId    String?  @unique
+    user      User?    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    userId    String?  @unique
+}
+
+model PostComment {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    published Boolean
+    content   String
+    post      Post?    @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    postId    String?  @unique
+    user      User?    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    userId    String?  @unique
+}
