@@ -24,4 +24,4 @@ export MYSQL_PASSWORD=znyhCTVg8tneMdAu
 export MYSQL_DB=remitano_funny_videos
 export MYSQL_PORT=3306
 export MYSQL_HOST=mysql
-export DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB}
+export DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}/${MYSQL_DB}
