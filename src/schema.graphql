@@ -69,8 +69,8 @@ type Post {
   createdAt: DateTime!
   id: ID!
   link: String
-  postComments: PostComment!
-  postLikes: PostLike!
+  postComments: [PostComment!]
+  postLikes: [PostLike!]
   published: Boolean!
   title: String!
 

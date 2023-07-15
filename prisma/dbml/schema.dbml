@@ -44,34 +44,32 @@ Table PostLike {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  published Boolean [not null]
   type String [not null]
   post Post
-  postId String [unique]
+  postId String
   user User
-  userId String [unique]
+  userId String
 }
 
 Table PostComment {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  published Boolean [not null]
   content String [not null]
   post Post
-  postId String [unique]
+  postId String
   user User
-  userId String [unique]
+  userId String
 }
 
 Ref: Profile.userId - User.id
 
 Ref: Post.userId > User.id
 
-Ref: PostLike.postId > Post.id [delete: No Action]
+Ref: PostLike.postId > Post.id
 
-Ref: PostLike.userId > User.id [delete: No Action]
+Ref: PostLike.userId > User.id
 
-Ref: PostComment.postId > Post.id [delete: No Action]
+Ref: PostComment.postId > Post.id
 
-Ref: PostComment.userId > User.id [delete: No Action]
+Ref: PostComment.userId > User.id

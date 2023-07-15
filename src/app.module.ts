@@ -14,6 +14,7 @@ import { GqlConfigService } from './gql-config.service';
 import { KeycloakConfigService } from './kc-config.service';
 import config from 'src/common/configs/config';
 import { RFMGatewayModule } from 'src/gateway/gateway.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -45,6 +46,12 @@ import { RFMGatewayModule } from 'src/gateway/gateway.module';
     }),
 
     RFMGatewayModule,
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT),
+      },
+    }),
 
     AuthModule,
     UsersModule,

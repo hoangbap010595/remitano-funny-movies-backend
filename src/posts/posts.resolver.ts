@@ -115,13 +115,15 @@ export class PostsResolver {
     return this.prisma.post.findUnique({ where: { id: post.id } }).user();
   }
 
-  @ResolveField('postLikes', () => PostLike)
+  @ResolveField('postLikes', () => [PostLike])
   async postLikes(@Parent() post: Post) {
     return this.prisma.post.findUnique({ where: { id: post.id } }).postLikes();
   }
 
-  @ResolveField('postComments', () => PostComment)
+  @ResolveField('postComments', () => [PostComment])
   async postComments(@Parent() post: Post) {
-    return this.prisma.post.findUnique({ where: { id: post.id } }).postComments();
+    return this.prisma.post
+      .findUnique({ where: { id: post.id } })
+      .postComments();
   }
 }

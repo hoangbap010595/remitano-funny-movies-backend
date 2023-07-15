@@ -9,40 +9,45 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RFMGatewayService } from 'src/gateway/gateway.service';
-import {
-  RFMEventType,
-  RFMDataEvent,
-  RFMClients,
-} from 'src/gateway/dto/event-type.enum';
+import { RFMEventType, RFMDataEvent } from 'src/gateway/dto/event-type.enum';
 import { AuthService } from 'src/auth/auth.service';
-import * as ytdl from 'ytdl-core';
+import { ShareMovieProducerService } from 'src/queues/share-movie.producer.service';
 
-@WebSocketGateway(3003, { transports: ['websocket'] })
+@WebSocketGateway(3003, {
+  cors: { origin: ['http://localhost:3001'] },
+})
 export class RFMGatewayEvents
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
     private rfmGatewayService: RFMGatewayService,
-    private authService: AuthService
+    private authService: AuthService,
+    private shareMovieProducer: ShareMovieProducerService
   ) {}
 
   @WebSocketServer()
   server: Server;
   clients: any = {};
+  connectedClients: Socket[] = [];
 
   handleConnection(@ConnectedSocket() client: Socket) {
-    console.log(`${client.id} connected`);
+    console.log(`Client ${client.id} connected`);
     this.clients[client.id] = null;
+    this.connectedClients.push(client);
   }
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
-    console.log(`${client.id} disconnected`);
+    console.log(`Client ${client.id} disconnected`);
     delete this.clients[client.id];
+    this.connectedClients = this.connectedClients.filter(
+      (c) => c.id !== client.id
+    );
   }
 
   @SubscribeMessage('newMessage')
   onNewMessage(@MessageBody() body: any) {
     console.log(body);
+    this.shareMovieProducer.shareMovie(body);
     this.server.emit('onMessage', {
       action: RFMEventType.NEW_MESSAGE,
       payload: body,
@@ -57,55 +62,50 @@ export class RFMGatewayEvents
     if (!this.clients[client.id] && data.action !== RFMEventType.INIT) {
       return 'AHIHI';
     }
-
+    const clientUser = this.clients[client.id];
+    const msgDataJob = {
+      payload: data.payload,
+      user: clientUser,
+    };
+    // Actions
     switch (data.action) {
       case RFMEventType.CREATE_POST:
-        // ytdl
-        //   .getInfo(data.payload.link)
-        //   .then((info: ytdl.videoInfo) => {
-        //     if (info) {
-        //       console.log('Tiêu đề:', info.videoDetails.title);
-        //       console.log('Tác giả:', info.videoDetails.author.name);
-        //       console.log(
-        //         'Thời lượng (giây):',
-        //         info.videoDetails.lengthSeconds
-        //       );
-        //       console.log('URL hình ảnh:', info.thumbnail_url);
-        //       console.log('URL video:', info.videoDetails.video_url);
-        //     }
-        //   })
-        //   .catch((error: any) => {
-        //     console.log(error);
-        //   });
-        this.rfmGatewayService
-          .createPost(this.clients[client.id].id, {
-            title: data.payload.title,
-            content: data.payload.content,
-            link: data.payload.link,
-          })
-          .then((post) => {
-            console.log(post);
-            this.server.emit('onMessage', {
-              action: RFMEventType.NOTIFY_SHARE_VIDEOS,
-              payload: {
-                title: post.title,
-                content: post.content,
-                author: this.clients[client.id].username,
-                link: post.link,
-              },
-            });
-          });
+        this.shareMovieProducer.createPost(msgDataJob);
+        break;
+      case RFMEventType.SHARE_VIDEO:
+        this.shareMovieProducer.shareMovie(msgDataJob);
+        break;
+      case RFMEventType.LIKE_POST:
+      case RFMEventType.DISLIKE_POST:
+        this.shareMovieProducer.reactPost(msgDataJob);
         break;
       case RFMEventType.INIT:
         this.authService.getUserFromToken(data.payload.token).then((user) => {
           this.clients[client.id] = user;
-          //   console.log(user);
+          client.emit('onMessage', {
+            action: RFMEventType.INIT,
+            payload: {
+              message: 'Connected to server!!!',
+            },
+          });
         });
         break;
       default:
         console.log('Action not found');
+        client.emit('onMessage', 'Action not found');
         break;
     }
     return data.action;
+  }
+
+  sendMessageToClient(clientId: string, message: any) {
+    const client = this.connectedClients.find((c) => c.id === clientId);
+    if (client) {
+      client.emit('onMessage', message);
+    }
+  }
+
+  sendMessageToAllClients(message: any) {
+    this.server.emit('onMessage', message);
   }
 }

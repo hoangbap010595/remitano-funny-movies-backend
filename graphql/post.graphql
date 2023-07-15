@@ -26,7 +26,7 @@ query PublishedPostsConnection {
 }
 
 mutation CreatePost {
-  createPost(data: { content: "Hello", title: "New Post" }) {
+  createPost(data: { content: "Hello", title: "New Post", link: "" }) {
     ...PostData
   }
 }

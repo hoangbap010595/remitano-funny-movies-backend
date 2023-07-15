@@ -1,16 +1,30 @@
-version: '3.8'
+version: "3.3"
 services:
-  postgres:
-    image: postgres:13
-    container_name: postgres
+  mysql:
+    image: mysql
     restart: always
     ports:
-      - '5432:5432'
-    env_file:
-      - .env
+      - 3306:3306
+    command: [
+        '--character-set-server=utf8mb4',
+        '--collation-server=utf8mb4_unicode_ci',
+        '--authentication_policy=mysql_native_password',
+        '--skip-ssl',
+        '--explicit_defaults_for_timestamp',
+        '--lower_case_table_names=1'
+    ]
+    environment:
+      - MYSQL_DATABASE=remitano_funny_videos
+      - MYSQL_ROOT_PASSWORD=Remitano@2023
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - /home/database/mysql/./wp-data:/docker-entrypoint-initdb.d
+      - /home/database/mysql/data:/var/lib/mysql
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
 
-volumes:
-  postgres:
-    name: nest-db
+networks:
+  default:
+    external:
+      name: nginx-proxy
