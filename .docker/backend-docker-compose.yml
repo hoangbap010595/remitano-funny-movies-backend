@@ -22,8 +22,10 @@ services:
       - VIRTUAL_PORT=$VIRTUAL_PORT
       - LETSENCRYPT_HOST=$LETSENCRYPT_ADMIN_API_HOST
       - LETSENCRYPT_EMAIL=$LETSENCRYPT_EMAIL
-    expose:
-      - 3000
+    ports:
+      - 3000:3000
+      - 3003:3003
+
     volumes:
       - remitano-funny-movies-backend:/usr/src/app
 
