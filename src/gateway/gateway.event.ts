@@ -8,19 +8,17 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { RFMGatewayService } from 'src/gateway/gateway.service';
 import { RFMEventType, RFMDataEvent } from 'src/gateway/dto/event-type.enum';
 import { AuthService } from 'src/auth/auth.service';
 import { ShareMovieProducerService } from 'src/queues/share-movie.producer.service';
 
 @WebSocketGateway(3003, {
-  cors: { origin: ['http://localhost:3001'] },
+  cors: { origin: [process.env.ALLOW_CORS] },
 })
 export class RFMGatewayEvents
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
-    private rfmGatewayService: RFMGatewayService,
     private authService: AuthService,
     private shareMovieProducer: ShareMovieProducerService
   ) {}

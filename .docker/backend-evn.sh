@@ -16,6 +16,7 @@ export REDIRECT_HTTPS='true'
 export APP_VOLUME_CODE_MOUNT_PATH="/home/applications/data/${APP_NAME}/code"
 
 export NODE_ENV=production
+export ALLOW_CORS=https://rfm-demo-be.thocbeauty.com
 export REDIS_HOST=redis
 export REDIS_PORT=6379
 
