@@ -18,7 +18,9 @@ export class GqlConfigService implements GqlOptionsFactory {
       },
       // subscription
       installSubscriptionHandlers: true,
-      includeStacktraceInErrorResponses: graphqlConfig.debug,
+      includeStacktraceInErrorResponses: process.env.NODE_ENV !== 'production',
+      path: this.configService.get<string>('GRAPHQL_ENDPOINT'),
+      nodeEnv: process.env.NODE_ENV,
       playground: graphqlConfig.playgroundEnabled,
       context: ({ req }) => ({ req }),
     };
