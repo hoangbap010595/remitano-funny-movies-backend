@@ -12,7 +12,7 @@ import { UsersModule } from 'src/users/users.module';
 import { PostsModule } from 'src/posts/posts.module';
 import { GqlConfigService } from './gql-config.service';
 import { KeycloakConfigService } from './kc-config.service';
-import { BullConfigService } from './queue-config.servies';
+import { BullConfigService } from './queue-config.service';
 import config from 'src/common/configs/config';
 import { RFMGatewayModule } from 'src/gateway/gateway.module';
 import { BullModule } from '@nestjs/bull';
