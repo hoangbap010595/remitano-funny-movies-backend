@@ -19,6 +19,7 @@ export class ShareMovieConsumer {
     ytdl
       .getInfo(bodyData.payload.link)
       .then((info: ytdl.videoInfo) => {
+        // console.log(info.videoDetails);
         if (info) {
           //   console.log('title:', info.videoDetails.title);
           //   console.log('description:', info.videoDetails.description);
@@ -32,15 +33,19 @@ export class ShareMovieConsumer {
               link: info.videoDetails.embed.iframeUrl,
             })
             .then((post) => {
-              console.log(post);
+              //   console.log(post);
               this.rFMGatewayEvents.sendMessageToAllClients({
                 action: RFMEventType.NOTIFY_SHARE_VIDEO,
                 payload: {
-                  title: info.videoDetails.title,
-                  content: content,
-                  author: bodyData.user.email,
-                  link: info.videoDetails.video_url,
-                  postId: post.id,
+                  error: 0,
+                  message: `Your movie ${info.videoDetails.title}" has been shared!!!`,
+                  data: {
+                    title: info.videoDetails.title,
+                    content: content,
+                    author: bodyData.user.email,
+                    link: info.videoDetails.video_url,
+                    postId: post.id,
+                  },
                 },
               });
             });
@@ -48,6 +53,14 @@ export class ShareMovieConsumer {
       })
       .catch((error: any) => {
         console.log(error);
+        this.rFMGatewayEvents.sendMessageToClient(bodyData.clientId, {
+          action: RFMEventType.NOTIFY_SHARE_VIDEO,
+          payload: {
+            error: 1,
+            message: 'Your URL not a YouTube video',
+            data: { author: bodyData.user.email },
+          },
+        });
       });
     console.log('shareMovieJob - End');
     return {};

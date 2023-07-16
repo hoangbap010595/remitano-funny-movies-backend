@@ -3,19 +3,24 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Chance } from 'chance';
 import { AppModule } from 'src/app.module';
+import { getRandomPort } from 'src/common/helpers/app-fn';
 
 const chance = new Chance();
 
 describe('AppResolver (e2e)', () => {
   let app: INestApplication;
-
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    await app.init();
+    //await app.init();
+    await app.listen(getRandomPort());
+  });
+
+  afterEach(async () => {
+    await app.close();
   });
 
   it('helloWorld (Query)', () => {

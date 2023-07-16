@@ -67,6 +67,7 @@ export class RFMGatewayEvents
     const msgDataJob = {
       payload: data.payload,
       user: clientUser,
+      clientId: client.id,
     };
     // Actions
     switch (data.action) {

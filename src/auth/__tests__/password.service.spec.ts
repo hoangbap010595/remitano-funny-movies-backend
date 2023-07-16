@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'nestjs-prisma';
 import { ConfigService } from '@nestjs/config';
-import { PasswordService } from './password.service';
+import { PasswordService } from '../password.service';
 
 describe('PasswordService', () => {
   let service: PasswordService;
