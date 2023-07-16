@@ -10,6 +10,7 @@ export class GqlConfigService implements GqlOptionsFactory {
   createGqlOptions(): ApolloDriverConfig {
     const graphqlConfig = this.configService.get<GraphqlConfig>('graphql');
     return {
+      introspection: true,
       // schema options
       autoSchemaFile: graphqlConfig.schemaDestination || './src/schema.graphql',
       sortSchema: graphqlConfig.sortSchema,

@@ -7,7 +7,7 @@
           "dev": {
             "url": "http://localhost:3000/graphql"
           },
-          "production": {
+          "prod": {
             "url": "https://rfm-demo-be.thocbeauty.com/graphql"
           }
         }

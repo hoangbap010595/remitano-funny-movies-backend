@@ -12,6 +12,7 @@ import { UsersModule } from 'src/users/users.module';
 import { PostsModule } from 'src/posts/posts.module';
 import { GqlConfigService } from './gql-config.service';
 import { KeycloakConfigService } from './kc-config.service';
+import { BullConfigService } from './queue-config.servies';
 import config from 'src/common/configs/config';
 import { RFMGatewayModule } from 'src/gateway/gateway.module';
 import { BullModule } from '@nestjs/bull';
@@ -46,11 +47,8 @@ import { BullModule } from '@nestjs/bull';
     }),
 
     RFMGatewayModule,
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT),
-      },
+    BullModule.forRootAsync({
+      useClass: BullConfigService,
     }),
 
     AuthModule,

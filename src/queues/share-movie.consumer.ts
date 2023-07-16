@@ -1,6 +1,6 @@
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
-import { RFMEventType, RFMReactType } from 'src/gateway/dto/event-type.enum';
+import { RFMEventType } from 'src/gateway/dto/event-type.enum';
 import { RFMGatewayEvents } from 'src/gateway/gateway.event';
 import { RFMGatewayService } from 'src/gateway/gateway.service';
 import * as ytdl from 'ytdl-core';
@@ -20,9 +20,9 @@ export class ShareMovieConsumer {
       .getInfo(bodyData.payload.link)
       .then((info: ytdl.videoInfo) => {
         if (info) {
-          //   console.log('Tiêu đề:', info.videoDetails.title);
-          //   console.log('Mô tả:', info.videoDetails.description);
-          //   console.log('Tác giả:', info.videoDetails.author.name);
+          //   console.log('title:', info.videoDetails.title);
+          //   console.log('description:', info.videoDetails.description);
+          //   console.log('author:', info.videoDetails.author.name);
           //   console.log('URL video:', info.videoDetails.video_url);
           const content = info.videoDetails.description.substring(500);
           this.rfmGatewayService
