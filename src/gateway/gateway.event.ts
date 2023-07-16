@@ -13,7 +13,10 @@ import { AuthService } from 'src/auth/auth.service';
 import { ShareMovieProducerService } from 'src/queues/share-movie.producer.service';
 
 @WebSocketGateway(3003, {
-  cors: { origin: [process.env.ALLOW_CORS] },
+  cors: {
+    transports: ['websocket', 'polling'],
+    origin: [process.env.ALLOW_CORS],
+  },
 })
 export class RFMGatewayEvents
   implements OnGatewayConnection, OnGatewayDisconnect
