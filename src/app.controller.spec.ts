@@ -1,31 +1,66 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Chance } from 'chance';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
-const chance = new Chance();
+import { AuthGuard } from 'nest-keycloak-connect';
 
 describe('AppController', () => {
   let appController: AppController;
+  let appService: AppService;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [AppService],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue({ canActivate: () => true }) // Mock the AuthGuard to allow access
+      .compile();
 
-    appController = app.get<AppController>(AppController);
+    appController = moduleRef.get<AppController>(AppController);
+    appService = moduleRef.get<AppService>(AppService);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toEqual('Hello World!');
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  describe('getHello', () => {
+    it('should return the result from AppService', () => {
+      const expectedResult = 'Hello World!';
+      jest.spyOn(appService, 'getHello').mockReturnValue(expectedResult);
+
+      const result = appController.getHello();
+
+      expect(result).toEqual(expectedResult);
+      expect(appService.getHello).toHaveBeenCalled();
+    });
+
+    it('should be accessible to all (public)', () => {
+      const publicMetadata = Reflect.getMetadataKeys(appController.getHello);
+      const actionPublic = publicMetadata.includes('unprotected');
+      expect(actionPublic).toBe(true);
     });
   });
-  describe('hello/:name', () => {
-    it('should return "Hello ${name}!"', () => {
-      const name = chance.name();
-      expect(appController.getHelloName(name)).toEqual(`Hello ${name}!`);
+
+  describe('getHelloName', () => {
+    const name = 'Hoang';
+
+    it('should return the result from AppService with the given name', () => {
+      const expectedResult = `Hello ${name}`;
+      jest.spyOn(appService, 'getHelloName').mockReturnValue(expectedResult);
+
+      const result = appController.getHelloName(name);
+
+      expect(result).toEqual(expectedResult);
+      expect(appService.getHelloName).toHaveBeenCalledWith(name);
+    });
+
+    it('should be accessible when logged in (private)', () => {
+      const publicMetadata = Reflect.getMetadataKeys(
+        appController.getHelloName
+      );
+      const actionPublic = !publicMetadata.includes('unprotected');
+      expect(actionPublic).toEqual(true);
     });
   });
 });
