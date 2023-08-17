@@ -14,6 +14,7 @@ export enum RFMEventType {
   NOTIFY_COMMENT = 'NOTIFY_COMMENT',
   NOTIFY_SHARE_VIDEO = 'NOTIFY_SHARE_VIDEO',
   NEW_MESSAGE = 'NEW_MESSAGE',
+  NEW_COMMENT = 'NEW_COMMENT',
 }
 
 export interface RFMDataEvent {

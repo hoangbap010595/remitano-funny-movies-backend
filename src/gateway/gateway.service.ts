@@ -40,4 +40,31 @@ export class RFMGatewayService {
         console.log(err);
       });
   }
+
+  async commentPost(userId: string, postId: string, content: string) {
+    console.log('commentPost from websocket');
+    // const check = await this.prisma.postComment.findFirst({
+    //   where: { postId: postId, userId: userId },
+    // });
+    // const postCommentId = check?.id || 'NULL';
+    this.prisma.postComment
+      .create({
+        data: {
+          content: content,
+          postId: postId,
+          userId: userId,
+        },
+      })
+      //   .upsert({
+      //     where: { id: postCommentId },
+      //     update: { content: content },
+      //     create: { content: content, postId: postId, userId: userId },
+      //   })
+      .then((x) => {
+        console.log(x);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 }

@@ -81,6 +81,9 @@ export class RFMGatewayEvents
       case RFMEventType.DISLIKE_POST:
         this.shareMovieProducer.reactPost(msgDataJob);
         break;
+      case RFMEventType.NEW_COMMENT:
+        this.shareMovieProducer.commentPost(msgDataJob);
+        break;
       case RFMEventType.INIT:
         this.authService.getUserFromToken(data.payload.token).then((user) => {
           this.clients[client.id] = user;

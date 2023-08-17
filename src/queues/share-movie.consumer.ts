@@ -109,4 +109,21 @@ export class ShareMovieConsumer {
     console.log('reactPostJob - End');
     return {};
   }
+
+  @Process('comment-post-job')
+  async commentPostJob(job: Job<unknown>) {
+    console.log('commentPostJob - Begin');
+    const bodyData: any = job.data;
+    this.rfmGatewayService
+      .commentPost(
+        bodyData.user.id,
+        bodyData.payload.postId,
+        bodyData.payload.comment
+      )
+      .then(() => {
+        console.log('reactPostJob: OKE');
+      });
+    console.log('reactPostJob - End');
+    return {};
+  }
 }

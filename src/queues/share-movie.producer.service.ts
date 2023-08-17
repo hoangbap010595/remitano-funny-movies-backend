@@ -17,4 +17,8 @@ export class ShareMovieProducerService {
   async reactPost(data: any) {
     await this.shareMovieQueue.add('react-post-job', data);
   }
+
+  async commentPost(data: any) {
+    await this.shareMovieQueue.add('comment-post-job', data);
+  }
 }

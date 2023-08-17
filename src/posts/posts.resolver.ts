@@ -23,6 +23,7 @@ import { PostOrder } from './dto/post-order.input';
 import { CreatePostInput } from './dto/createPost.input';
 import { PostLike } from './models/post-like.model';
 import { PostComment } from './models/post-comment.model';
+import { PostCommentConnection } from './models/post-comment.connection.model';
 
 const pubSub = new PubSub();
 
@@ -83,6 +84,39 @@ export class PostsResolver {
           where: {
             published: true,
             title: { contains: query || '' },
+          },
+        }),
+      { first, last, before, after }
+    );
+    return a;
+  }
+
+  @Query(() => PostCommentConnection)
+  async publishedCommentPosts(
+    @Args() { after, before, first, last }: PaginationArgs,
+    @Args({ name: 'postId', type: () => String, nullable: false })
+    postId: string,
+    @Args({
+      name: 'orderBy',
+      type: () => PostOrder,
+      nullable: true,
+    })
+    orderBy: PostOrder
+  ) {
+    const a = await findManyCursorConnection(
+      (args) =>
+        this.prisma.postComment.findMany({
+          include: { user: true },
+          where: {
+            postId: postId,
+          },
+          orderBy: orderBy ? { [orderBy.field]: orderBy.direction } : undefined,
+          ...args,
+        }),
+      () =>
+        this.prisma.postComment.count({
+          where: {
+            postId: postId,
           },
         }),
       { first, last, before, after }
